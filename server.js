@@ -1,11 +1,38 @@
-﻿require("dotenv").config();
+﻿
+require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
-const sql = require("mssql");
+const { Pool } = require("pg");
+
+const pgEmployeeApi = require("./pg-employee-api");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+/* =====================================================
+   POSTGRESQL / SUPABASE CONNECTION
+===================================================== */
+
+if (!process.env.DATABASE_URL) {
+    console.error("ERROR: DATABASE_URL is not configured.");
+    process.exit(1);
+}
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+pool.on("error", (err) => {
+    console.error("PostgreSQL Pool Error:", err);
+});
+
+/* =====================================================
+   EXPRESS CONFIGURATION
+===================================================== */
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
@@ -14,82 +41,103 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-let poolPromise = null;
+/* =====================================================
+   POSTGRESQL TEST
+===================================================== */
 
-function getDB() {
-    if (!poolPromise) {
-        poolPromise = sql.connect({
-            server: process.env.DB_SERVER,
-            database: process.env.DB_NAME,
-            user: process.env.DB_USER,
-            password: process.env.DB_PASSWORD,
-            options: {
-                encrypt: String(process.env.DB_ENCRYPT).toLowerCase() === "true",
-                trustServerCertificate:
-                    String(process.env.DB_TRUST_SERVER_CERTIFICATE).toLowerCase() === "true"
-            }
+app.get("/api/health", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT NOW() AS time");
+
+        res.json({
+            success: true,
+            database: "PostgreSQL",
+            status: "connected",
+            time: result.rows[0].time
+        });
+    } catch (error) {
+        console.error("Database Health Error:", error);
+
+        res.status(500).json({
+            success: false,
+            database: "PostgreSQL",
+            status: "error",
+            message: error.message
         });
     }
-    return poolPromise;
-}
+});
 
+/* =====================================================
+   EMPLOYEE POSTGRESQL API
+===================================================== */
 
-/* HOME */
+app.use(pgEmployeeApi);
+
+/* =====================================================
+   HOME
+===================================================== */
 
 app.get("/", (req, res) => {
     res.redirect("/dashboard");
 });
 
-
-/* DASHBOARD */
+/* =====================================================
+   DASHBOARD
+===================================================== */
 
 app.get("/dashboard", async (req, res) => {
-
     try {
-
-        const pool = await getDB();
-
-        const employees = await pool.request().query(`
-            SELECT TOP 10
-                ID, EMP_CODE, EMP_NAME, DEPARTMENT, DESIGNATION
-            FROM dbo.Employees
-            ORDER BY ID DESC
-        `);
-
-        const employeeCount = await pool.request().query(`
-            SELECT COUNT(*) AS Total
-            FROM dbo.Employees
-        `);
-
-        const phoneCount = await pool.request().query(`
-            SELECT COUNT(*) AS Total
-            FROM dbo.Phones
-        `);
-
-        const switchCount = await pool.request().query(`
-            SELECT COUNT(*) AS Total
-            FROM dbo.Switches
-        `);
-
-        const switches = await pool.request().query(`
-            SELECT TOP 10
-                id, switchName, location, ipAddress,
-                vendor, model, status
-            FROM dbo.Switches
+        const employees = await pool.query(`
+            SELECT
+                id,
+                emp_code,
+                emp_name,
+                department,
+                designation
+            FROM employees
             ORDER BY id DESC
+            LIMIT 10
+        `);
+
+        const employeeCount = await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM employees
+        `);
+
+        const phoneCount = await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM phones
+        `);
+
+        const switchCount = await pool.query(`
+            SELECT COUNT(*) AS total
+            FROM switches
+        `);
+
+        const switches = await pool.query(`
+            SELECT
+                id,
+                switchname,
+                location,
+                ipaddress,
+                vendor,
+                model,
+                status
+            FROM switches
+            ORDER BY id DESC
+            LIMIT 10
         `);
 
         res.render("dashboard", {
-            totalEmployees: employeeCount.recordset[0].Total,
-            totalPhones: phoneCount.recordset[0].Total,
-            totalSwitches: switchCount.recordset[0].Total,
-            employees: employees.recordset,
-            switches: switches.recordset
+            totalEmployees: Number(employeeCount.rows[0].total),
+            totalPhones: Number(phoneCount.rows[0].total),
+            totalSwitches: Number(switchCount.rows[0].total),
+            employees: employees.rows,
+            switches: switches.rows
         });
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Dashboard Error:", error);
 
         res.status(500).send(
             "Dashboard Database Error: " + error.message
@@ -97,76 +145,38 @@ app.get("/dashboard", async (req, res) => {
     }
 });
 
+/* =====================================================
+   EMPLOYEE MASTER
+===================================================== */
 
-/* EMPLOYEES */
+app.get("/employees", require("./pg-employee-route"));
 
-app.get("/employees", async (req, res) => {
-
-    try {
-
-        const pool = await getDB();
-
-        const result = await pool.request().query(`
-            SELECT
-                ID,
-                EMP_CODE,
-                SAP_CODE,
-                EMP_NAME,
-                DOMAIN_ID,
-                EMAIL,
-                MOBILE_NO,
-                PHONE_NO,
-                DEPARTMENT,
-                DESIGNATION,
-                CREATED_AT
-            FROM dbo.Employees
-            ORDER BY ID DESC
-        `);
-
-        res.render("employees", {
-            employees: result.recordset
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        res.status(500).send(
-            "Employee Database Error: " + error.message
-        );
-    }
-});
-
-
-/* PHONES */
+/* =====================================================
+   PHONE MASTER
+===================================================== */
 
 app.get("/phones", async (req, res) => {
-
     try {
-
-        const pool = await getDB();
-
-        const result = await pool.request().query(`
+        const result = await pool.query(`
             SELECT
-                Id,
-                EmployeeCode,
-                EmployeeName,
-                Mobile,
-                Phone,
-                Extension,
-                CreatedAt,
-                UpdatedAt
-            FROM dbo.Phones
-            ORDER BY Id DESC
+                id,
+                employeecode,
+                employeename,
+                mobile,
+                phone,
+                extension,
+                createdat,
+                updatedat
+            FROM phones
+            ORDER BY id DESC
         `);
 
         res.render("phones", {
-            phones: result.recordset
+            phones: result.rows
         });
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Phone Error:", error);
 
         res.status(500).send(
             "Phone Database Error: " + error.message
@@ -174,42 +184,38 @@ app.get("/phones", async (req, res) => {
     }
 });
 
-
-/* SWITCHES */
+/* =====================================================
+   SWITCH MASTER
+===================================================== */
 
 app.get("/switches", async (req, res) => {
-
     try {
-
-        const pool = await getDB();
-
-        const result = await pool.request().query(`
+        const result = await pool.query(`
             SELECT
                 id,
-                switchName,
+                switchname,
                 location,
-                ipAddress,
-                switchType,
-                switchMode,
+                ipaddress,
+                switchtype,
+                switchmode,
                 vendor,
                 model,
-                serialNo,
-                portCount,
+                serialno,
+                portcount,
                 rack,
                 status,
                 remarks,
-                createdAt
-            FROM dbo.Switches
+                createdat
+            FROM switches
             ORDER BY id DESC
         `);
 
         res.render("switches", {
-            switches: result.recordset
+            switches: result.rows
         });
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Switch Error:", error);
 
         res.status(500).send(
             "Switch Database Error: " + error.message
@@ -217,33 +223,24 @@ app.get("/switches", async (req, res) => {
     }
 });
 
+/* =====================================================
+   MASTER DATA
+===================================================== */
 
-/* MASTER DATA */
-
-
-
-
-
-/* MASTER DATA */
 app.get("/master-data", (req, res) => {
     res.render("master-data");
 });
 
+/* =====================================================
+   SERVER START
+===================================================== */
 
-
-require("./master-routes")(app, getDB, sql);
-
-/* START SERVER */
 app.listen(PORT, "0.0.0.0", () => {
     console.log("");
-    console.log("======================================");
-    console.log("       EMS NEW SERVER STARTED");
-    console.log("======================================");
-    console.log("Local : http://localhost:" + PORT);
-    console.log("LAN   : http://SERVER-IP:" + PORT);
-    console.log("======================================");
+    console.log("==========================================");
+    console.log("       EMS POSTGRESQL SERVER STARTED");
+    console.log("==========================================");
+    console.log("PORT:", PORT);
+    console.log("DATABASE: PostgreSQL / Supabase");
+    console.log("==========================================");
 });
-
-
-
-
