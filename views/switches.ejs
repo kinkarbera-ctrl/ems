@@ -1,0 +1,1722 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS - Switch Master</title>
+
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/inner-pages.css">
+
+    <style>
+        .switch-page {
+            padding: 26px 32px 40px;
+            background: #f4f7fb;
+            min-height: calc(100vh - 82px);
+        }
+
+        .switch-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 22px;
+        }
+
+        .switch-head h1 {
+            margin: 0;
+            font-size: 23px;
+            color: #172033;
+        }
+
+        .switch-head p {
+            margin: 5px 0 0;
+            color: #8b95a7;
+            font-size: 12px;
+        }
+
+        .switch-toolbar {
+            background: #fff;
+            border: 1px solid #e3e8ef;
+            border-radius: 12px;
+            padding: 13px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            gap: 12px;
+        }
+
+        .switch-search {
+            width: 320px;
+            height: 40px;
+            border: 1px solid #dfe5ed;
+            border-radius: 8px;
+            outline: none;
+            padding: 0 14px;
+            background: #f9fafc;
+            color: #344054;
+            font-size: 12px;
+        }
+
+        .switch-search:focus {
+            background: #fff;
+            border-color: #8db5ee;
+            box-shadow: 0 0 0 3px #edf4ff;
+        }
+
+        .switch-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .switch-btn {
+            height: 38px;
+            border-radius: 8px;
+            padding: 0 14px;
+            border: 1px solid #dfe5ed;
+            background: #fff;
+            color: #475467;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 650;
+        }
+
+        .switch-btn:hover {
+            background: #f6f8fb;
+        }
+
+        .switch-btn.primary {
+            border-color: #2563eb;
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .switch-btn.primary:hover {
+            background: #1d4ed8;
+        }
+
+        .switch-panel {
+            background: #fff;
+            border: 1px solid #e3e8ef;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .switch-panel-head {
+            height: 66px;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .switch-panel-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #273244;
+        }
+
+        .switch-panel-sub {
+            margin-top: 3px;
+            font-size: 10px;
+            color: #98a2b3;
+        }
+
+        .switch-count {
+            background: #eef4ff;
+            color: #2563eb;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .switch-table-wrap {
+            overflow-x: auto;
+        }
+
+        .switch-table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+        }
+
+        .switch-table th {
+            height: 44px;
+            padding: 0 15px;
+            text-align: left;
+            background: #f8fafc;
+            border-bottom: 1px solid #e8ecf1;
+            color: #7b8798;
+            font-size: 9px;
+            font-weight: 750;
+            letter-spacing: .5px;
+            white-space: nowrap;
+        }
+
+        .switch-table td {
+            height: 54px;
+            padding: 8px 15px;
+            border-bottom: 1px solid #f0f2f5;
+            color: #667085;
+            font-size: 11px;
+            white-space: nowrap;
+        }
+
+        .switch-table tbody tr:hover {
+            background: #f8fbff;
+        }
+
+        .switch-name-cell {
+            font-weight: 700;
+            color: #344054;
+        }
+
+        .switch-ip {
+            display: inline-block;
+            padding: 5px 8px;
+            border-radius: 5px;
+            background: #f3f6fa;
+            color: #52647b;
+            font-family: Consolas, monospace;
+            font-size: 10px;
+        }
+
+        .switch-type {
+            color: #475467;
+            font-weight: 600;
+        }
+
+        .switch-status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            background: #ecfdf3;
+            color: #16834b;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .switch-status.offline {
+            background: #fff1f2;
+            color: #d92d20;
+        }
+
+        .switch-status.unknown {
+            background: #f2f4f7;
+            color: #667085;
+        }
+
+        .switch-action {
+            display: flex;
+            gap: 6px;
+        }
+
+        .switch-action button {
+            width: 30px;
+            height: 29px;
+            border-radius: 6px;
+            border: 1px solid #e2e7ee;
+            background: #fff;
+            cursor: pointer;
+            color: #667085;
+        }
+
+        .switch-action button:hover {
+            background: #f4f7fb;
+        }
+
+        .switch-empty {
+            padding: 55px;
+            text-align: center;
+            color: #98a2b3;
+            font-size: 12px;
+        }
+
+        @media (max-width: 800px) {
+            .switch-page {
+                padding: 20px;
+            }
+
+            .switch-head,
+            .switch-toolbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .switch-search {
+                width: 100%;
+            }
+
+            .switch-actions {
+                width: 100%;
+            }
+        }
+    
+<style>
+/* =========================================================
+   SWITCH MASTER - PREMIUM NETWORK UI
+   ========================================================= */
+
+.switch-page {
+    padding: 22px;
+}
+
+/* HEADER */
+
+.switch-hero {
+    position: relative;
+    overflow: hidden;
+
+    padding: 25px 30px;
+    margin-bottom: 20px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(18,48,78,.96),
+            rgba(42,86,120,.90)
+        );
+
+    color: white;
+
+    box-shadow: 0 12px 30px rgba(18,48,78,.25);
+}
+
+.switch-hero::after {
+    content: "NETWORK";
+    position: absolute;
+    right: 25px;
+    top: 18px;
+
+    font-size: 55px;
+    font-weight: 800;
+
+    color: rgba(255,255,255,.06);
+    letter-spacing: 5px;
+}
+
+.switch-hero h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.switch-hero p {
+    margin: 7px 0 0;
+    color: rgba(255,255,255,.78);
+    font-size: 13px;
+}
+
+/* TOOLBAR */
+
+.switch-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 18px;
+    padding: 15px 18px;
+
+    background: rgba(255,255,255,.92);
+
+    border: 1px solid #e4e9ef;
+    border-radius: 15px;
+
+    box-shadow: 0 7px 22px rgba(20,40,60,.09);
+}
+
+.switch-toolbar-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #183b5d;
+    font-weight: 700;
+}
+
+.switch-network-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #eaf2f8;
+    color: #1e587d;
+
+    font-size: 19px;
+}
+
+/* TABLE CARD */
+
+.switch-table-card {
+    overflow: hidden;
+
+    background: rgba(255,255,255,.94);
+
+    border: 1px solid #e2e8ef;
+    border-radius: 18px;
+
+    box-shadow: 0 12px 35px rgba(20,40,60,.12);
+}
+
+/* TABLE */
+
+.switch-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.switch-table thead {
+    background: #183b5d;
+}
+
+.switch-table th {
+    padding: 14px 13px;
+
+    color: white;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-align: left;
+    white-space: nowrap;
+
+    letter-spacing: .4px;
+}
+
+.switch-table td {
+    padding: 13px;
+
+    color: #344054;
+
+    font-size: 12px;
+
+    border-bottom: 1px solid #edf0f3;
+}
+
+.switch-table tbody tr {
+    transition: .18s ease;
+}
+
+.switch-table tbody tr:hover {
+    background: #f4f8fb;
+}
+
+/* SWITCH NAME */
+
+.switch-name {
+    font-weight: 700;
+    color: #173f63;
+}
+
+.switch-location {
+    color: #667085;
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+/* IP */
+
+.switch-ip {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    background: #edf5fa;
+    color: #205b80;
+
+    font-family: Consolas, monospace;
+    font-size: 11px;
+}
+
+/* STATUS */
+
+.switch-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: #edf8f1;
+    color: #18794e;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.switch-status::before {
+    content: "";
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #22a06b;
+
+    box-shadow: 0 0 0 3px rgba(34,160,107,.12);
+}
+
+/* BUTTONS */
+
+.switch-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    border: 1px solid #d9e2ec;
+
+    background: white;
+
+    color: #35516b;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .18s ease;
+}
+
+.switch-action:hover {
+    transform: translateY(-1px);
+
+    background: #edf5fa;
+
+    border-color: #9bbbd0;
+}
+
+.switch-action.delete {
+    color: #b42318;
+}
+
+.switch-action.delete:hover {
+    background: #fff1f0;
+    border-color: #f0aaa5;
+}
+
+/* EMPTY */
+
+.switch-empty {
+    padding: 55px 20px;
+
+    text-align: center;
+    color: #667085;
+}
+
+.switch-empty-icon {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px) {
+
+    .switch-page {
+        padding: 12px;
+    }
+
+    .switch-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .switch-table-card {
+        overflow-x: auto;
+    }
+
+    .switch-table {
+        min-width: 950px;
+    }
+}
+</style>
+
+</style>
+</head>
+
+<body>
+
+<div class="ems-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">EMS</div>
+
+            <div>
+                <div class="brand-title">Employee</div>
+                <div class="brand-subtitle">Management System</div>
+            </div>
+        </div>
+
+        <div class="menu-title">MAIN MENU</div>
+
+        <a href="/dashboard" class="menu-item">
+            <span class="menu-icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="/employees" class="menu-item">
+            <span class="menu-icon">♙</span>
+            <span>Employee Master</span>
+        </a>
+
+        <a href="/phones" class="menu-item">
+            <span class="menu-icon">☎</span>
+            <span>Phone Master</span>
+        </a>
+
+        <a href="/switches" class="menu-item active">
+            <span class="menu-icon">▣</span>
+            <span>Switch Master</span>
+        </a>
+
+        <a href="/master-data" class="menu-item">
+            <span class="menu-icon">▤</span>
+            <span>Master Data</span>
+        </a>
+
+        <div class="sidebar-bottom">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+
+            <div class="version">
+                EMS v1.0
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main-content">
+
+        <!-- TOP BAR -->
+        <header class="topbar">
+
+            <div>
+                <div class="page-title">Switch Master</div>
+
+                <div class="page-subtitle">
+                    Network switch and port information
+                </div>
+            </div>
+
+            <div class="user-box">
+
+                <div class="user-avatar">
+                    A
+                </div>
+
+                <div>
+                    <div class="user-name">
+                        Administrator
+                    </div>
+
+                    <div class="user-role">
+                        System Admin
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE -->
+        <section class="switch-page">
+
+            <div class="switch-head">
+
+                <div>
+                    <h1>Switch Master</h1>
+
+                    <p>
+                        Manage network switch inventory and configuration
+                    </p>
+                </div>
+
+                <button class="switch-btn primary">
+                    + Add Switch
+                </button>
+
+            </div>
+
+
+            <!-- TOOLBAR -->
+            <div class="switch-toolbar">
+
+                <input
+                    id="switchSearch"
+                    class="switch-search"
+                    type="text"
+                    placeholder="Search switch, location, IP, vendor..."
+                >
+
+                <div class="switch-actions">
+
+                    <button class="switch-btn">
+                        ↓ Export Excel
+                    </button>
+
+                    <button class="switch-btn">
+                        ↑ Import Excel
+                    </button>
+
+                    <button class="switch-btn">
+                        Refresh
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- TABLE -->
+            <div class="switch-panel">
+
+                <div class="switch-panel-head">
+
+                    <div>
+                        <div class="switch-panel-title">
+                            Network Switch Records
+                        </div>
+
+                        <div class="switch-panel-sub">
+                            Switch inventory and configuration details
+                        </div>
+                    </div>
+
+                    <div class="switch-count">
+                        <%= switches ? switches.length : 0 %> Records
+                    </div>
+
+                </div>
+
+
+                <div class="switch-table-wrap">
+
+                    <table class="switch-table" id="switchTable">
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>SWITCH NAME</th>
+                                <th>LOCATION</th>
+                                <th>IP ADDRESS</th>
+                                <th>TYPE</th>
+                                <th>MODE</th>
+                                <th>VENDOR</th>
+                                <th>MODEL</th>
+                                <th>SERIAL NO</th>
+                                <th>PORTS</th>
+                                <th>RACK</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                        <% if (switches && switches.length > 0) { %>
+
+                            <% switches.forEach(function(sw) { %>
+
+                            <tr>
+
+                                <td>
+                                    <%= sw.id || "-" %>
+                                </td>
+
+                                <td class="switch-name-cell">
+                                    <%= sw.switchName || "-" %>
+                                </td>
+
+                                <td>
+                                    <%= sw.location || "-" %>
+                                </td>
+
+                                <td>
+                                    <span class="switch-ip">
+                                        <%= sw.ipAddress || "-" %>
+                                    </span>
+                                </td>
+
+                                <td class="switch-type">
+                                    <%= sw.switchType || "-" %>
+                                </td>
+
+                                <td>
+                                    <%= sw.switchMode || "-" %>
+                                </td>
+
+                                <td>
+                                    <%= sw.vendor || "-" %>
+                                </td>
+
+                                <td>
+                                    <%= sw.model || "-" %>
+                                </td>
+
+                                <td>
+                                    <%= sw.serialNo || "-" %>
+                                </td>
+
+                                <td>
+                                    <%= sw.portCount || "-" %>
+                                </td>
+
+                                <td>
+                                    <%= sw.rack || "-" %>
+                                </td>
+
+                                <td>
+
+                                    <% 
+                                        const status =
+                                            String(sw.status || "Active")
+                                            .toLowerCase();
+                                    %>
+
+                                    <% if (
+                                        status === "active" ||
+                                        status === "online"
+                                    ) { %>
+
+                                        <span class="switch-status">
+                                            <%= sw.status || "Active" %>
+                                        </span>
+
+                                    <% } else if (
+                                        status === "offline" ||
+                                        status === "inactive"
+                                    ) { %>
+
+                                        <span class="switch-status offline">
+                                            <%= sw.status %>
+                                        </span>
+
+                                    <% } else { %>
+
+                                        <span class="switch-status unknown">
+                                            <%= sw.status || "Unknown" %>
+                                        </span>
+
+                                    <% } %>
+
+                                </td>
+
+                                <td>
+
+                                    <div class="switch-action">
+
+                                        <button
+                                            title="Edit"
+                                            type="button"
+                                            onclick="openSwitchEdit(this)">
+                                            ✎
+                                        </button>
+
+                                        <button
+                                            title="Delete"
+                                            type="button"
+                                            onclick="deleteSwitch(<%= sw.id %>, '<%= String(sw.switchName || "").replace(/'/g, "\\'") %>')">
+                                            ×
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            <% }); %>
+
+                        <% } else { %>
+
+                            <tr>
+                                <td colspan="13">
+                                    <div class="switch-empty">
+                                        No switch records found
+                                    </div>
+                                </td>
+                            </tr>
+
+                        <% } %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+const switchSearch =
+    document.getElementById("switchSearch");
+
+switchSearch.addEventListener("input", function () {
+
+    const searchValue =
+        this.value.toLowerCase().trim();
+
+    const rows =
+        document.querySelectorAll(
+            "#switchTable tbody tr"
+        );
+
+    rows.forEach(function (row) {
+
+        const text =
+            row.innerText.toLowerCase();
+
+        row.style.display =
+            text.includes(searchValue)
+                ? ""
+                : "none";
+
+    });
+
+});
+
+</script>
+
+<script>
+
+async function deleteSwitch(id, name) {
+
+    if (!confirm(
+        "Delete switch \"" + name + "\" ?\n\nThis action cannot be undone."
+    )) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/api/master-data/switch/" + id,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            alert(result.message || "Delete failed.");
+            return;
+        }
+
+        alert("Switch deleted successfully.");
+        location.reload();
+
+    } catch (error) {
+
+        alert("Delete Error: " + error.message);
+
+    }
+}
+
+</script>
+<style>
+
+.switch-edit-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.48);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.switch-edit-overlay.show {
+    display: flex;
+}
+
+.switch-edit-modal {
+    width: min(900px, 96vw);
+    max-height: 92vh;
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 25px 70px rgba(15, 23, 42, 0.25);
+    animation: switchModalIn .18s ease-out;
+}
+
+@keyframes switchModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.switch-edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 26px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.switch-edit-title {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 700;
+    color: #172033;
+}
+
+.switch-edit-subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #7b8494;
+}
+
+.switch-edit-close {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #475569;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.switch-edit-close:hover {
+    background: #e5e7eb;
+}
+
+.switch-edit-body {
+    padding: 24px 26px;
+}
+
+.switch-edit-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.switch-edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.switch-edit-field.full {
+    grid-column: 1 / -1;
+}
+
+.switch-edit-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.switch-edit-field input,
+.switch-edit-field select,
+.switch-edit-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d7dce5;
+    border-radius: 9px;
+    padding: 11px 12px;
+    font-size: 14px;
+    color: #172033;
+    background: #fff;
+    outline: none;
+    transition: .15s;
+}
+
+.switch-edit-field input:focus,
+.switch-edit-field select:focus,
+.switch-edit-field textarea:focus {
+    border-color: #64748b;
+    box-shadow: 0 0 0 3px rgba(100, 116, 139, .10);
+}
+
+.switch-edit-field textarea {
+    min-height: 85px;
+    resize: vertical;
+}
+
+.switch-edit-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 26px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafbfc;
+    border-radius: 0 0 18px 18px;
+}
+
+.switch-btn-cancel,
+.switch-btn-save {
+    border: 0;
+    border-radius: 9px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.switch-btn-cancel {
+    background: #eef0f3;
+    color: #475569;
+}
+
+.switch-btn-save {
+    background: #172033;
+    color: #fff;
+}
+
+.switch-btn-save:hover {
+    background: #0f172a;
+}
+
+@media (max-width: 700px) {
+    .switch-edit-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .switch-edit-field.full {
+        grid-column: auto;
+    }
+
+    .switch-edit-modal {
+        max-height: 95vh;
+    }
+}
+
+
+<style>
+/* =========================================================
+   SWITCH MASTER - PREMIUM NETWORK UI
+   ========================================================= */
+
+.switch-page {
+    padding: 22px;
+}
+
+/* HEADER */
+
+.switch-hero {
+    position: relative;
+    overflow: hidden;
+
+    padding: 25px 30px;
+    margin-bottom: 20px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(18,48,78,.96),
+            rgba(42,86,120,.90)
+        );
+
+    color: white;
+
+    box-shadow: 0 12px 30px rgba(18,48,78,.25);
+}
+
+.switch-hero::after {
+    content: "NETWORK";
+    position: absolute;
+    right: 25px;
+    top: 18px;
+
+    font-size: 55px;
+    font-weight: 800;
+
+    color: rgba(255,255,255,.06);
+    letter-spacing: 5px;
+}
+
+.switch-hero h1 {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.switch-hero p {
+    margin: 7px 0 0;
+    color: rgba(255,255,255,.78);
+    font-size: 13px;
+}
+
+/* TOOLBAR */
+
+.switch-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 18px;
+    padding: 15px 18px;
+
+    background: rgba(255,255,255,.92);
+
+    border: 1px solid #e4e9ef;
+    border-radius: 15px;
+
+    box-shadow: 0 7px 22px rgba(20,40,60,.09);
+}
+
+.switch-toolbar-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #183b5d;
+    font-weight: 700;
+}
+
+.switch-network-icon {
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #eaf2f8;
+    color: #1e587d;
+
+    font-size: 19px;
+}
+
+/* TABLE CARD */
+
+.switch-table-card {
+    overflow: hidden;
+
+    background: rgba(255,255,255,.94);
+
+    border: 1px solid #e2e8ef;
+    border-radius: 18px;
+
+    box-shadow: 0 12px 35px rgba(20,40,60,.12);
+}
+
+/* TABLE */
+
+.switch-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.switch-table thead {
+    background: #183b5d;
+}
+
+.switch-table th {
+    padding: 14px 13px;
+
+    color: white;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-align: left;
+    white-space: nowrap;
+
+    letter-spacing: .4px;
+}
+
+.switch-table td {
+    padding: 13px;
+
+    color: #344054;
+
+    font-size: 12px;
+
+    border-bottom: 1px solid #edf0f3;
+}
+
+.switch-table tbody tr {
+    transition: .18s ease;
+}
+
+.switch-table tbody tr:hover {
+    background: #f4f8fb;
+}
+
+/* SWITCH NAME */
+
+.switch-name {
+    font-weight: 700;
+    color: #173f63;
+}
+
+.switch-location {
+    color: #667085;
+    font-size: 11px;
+    margin-top: 3px;
+}
+
+/* IP */
+
+.switch-ip {
+    display: inline-block;
+
+    padding: 5px 9px;
+
+    border-radius: 7px;
+
+    background: #edf5fa;
+    color: #205b80;
+
+    font-family: Consolas, monospace;
+    font-size: 11px;
+}
+
+/* STATUS */
+
+.switch-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: #edf8f1;
+    color: #18794e;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.switch-status::before {
+    content: "";
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: #22a06b;
+
+    box-shadow: 0 0 0 3px rgba(34,160,107,.12);
+}
+
+/* BUTTONS */
+
+.switch-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 7px 11px;
+
+    border-radius: 8px;
+
+    border: 1px solid #d9e2ec;
+
+    background: white;
+
+    color: #35516b;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: .18s ease;
+}
+
+.switch-action:hover {
+    transform: translateY(-1px);
+
+    background: #edf5fa;
+
+    border-color: #9bbbd0;
+}
+
+.switch-action.delete {
+    color: #b42318;
+}
+
+.switch-action.delete:hover {
+    background: #fff1f0;
+    border-color: #f0aaa5;
+}
+
+/* EMPTY */
+
+.switch-empty {
+    padding: 55px 20px;
+
+    text-align: center;
+    color: #667085;
+}
+
+.switch-empty-icon {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px) {
+
+    .switch-page {
+        padding: 12px;
+    }
+
+    .switch-toolbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .switch-table-card {
+        overflow-x: auto;
+    }
+
+    .switch-table {
+        min-width: 950px;
+    }
+}
+</style>
+
+</style>
+
+<div id="switchEditOverlay" class="switch-edit-overlay">
+
+    <div class="switch-edit-modal">
+
+        <div class="switch-edit-header">
+
+            <div>
+                <h2 class="switch-edit-title">Edit Switch</h2>
+                <div class="switch-edit-subtitle">
+                    Update switch configuration details
+                </div>
+            </div>
+
+            <button
+                type="button"
+                class="switch-edit-close"
+                onclick="closeSwitchEdit()">
+                ×
+            </button>
+
+        </div>
+
+        <form id="switchEditForm">
+
+            <div class="switch-edit-body">
+
+                <div class="switch-edit-grid">
+
+                    <div class="switch-edit-field">
+                        <label>Switch Name</label>
+                        <input id="editSwitchName" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Location</label>
+                        <input id="editLocation" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>IP Address</label>
+                        <input id="editIpAddress" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Switch Type</label>
+                        <input id="editSwitchType" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Switch Mode</label>
+                        <input id="editSwitchMode" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Vendor</label>
+                        <input id="editVendor" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Model</label>
+                        <input id="editModel" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Serial No.</label>
+                        <input id="editSerialNo" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Port Count</label>
+                        <input id="editPortCount" type="number" min="0">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Rack</label>
+                        <input id="editRack" type="text">
+                    </div>
+
+                    <div class="switch-edit-field">
+                        <label>Status</label>
+                        <select id="editStatus">
+                            <option value="Active">Active</option>
+                            <option value="Online">Online</option>
+                            <option value="Inactive">Inactive</option>
+                            <option value="Offline">Offline</option>
+                        </select>
+                    </div>
+
+                    <div class="switch-edit-field full">
+                        <label>Remarks</label>
+                        <textarea id="editRemarks"></textarea>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="switch-edit-footer">
+
+                <button
+                    type="button"
+                    class="switch-btn-cancel"
+                    onclick="closeSwitchEdit()">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="switch-btn-save">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+let currentSwitchId = null;
+
+function openSwitchEdit(button) {
+
+    const row = button.closest("tr");
+
+    if (!row) {
+        alert("Switch record not found.");
+        return;
+    }
+
+    const cells = row.querySelectorAll("td");
+
+    currentSwitchId = cells[0].innerText.trim();
+
+    document.getElementById("editSwitchName").value =
+        cells[1].innerText.trim() === "-" ? "" : cells[1].innerText.trim();
+
+    document.getElementById("editLocation").value =
+        cells[2].innerText.trim() === "-" ? "" : cells[2].innerText.trim();
+
+    document.getElementById("editIpAddress").value =
+        cells[3].innerText.trim() === "-" ? "" : cells[3].innerText.trim();
+
+    document.getElementById("editSwitchType").value =
+        cells[4].innerText.trim() === "-" ? "" : cells[4].innerText.trim();
+
+    document.getElementById("editSwitchMode").value =
+        cells[5].innerText.trim() === "-" ? "" : cells[5].innerText.trim();
+
+    document.getElementById("editVendor").value =
+        cells[6].innerText.trim() === "-" ? "" : cells[6].innerText.trim();
+
+    document.getElementById("editModel").value =
+        cells[7].innerText.trim() === "-" ? "" : cells[7].innerText.trim();
+
+    document.getElementById("editSerialNo").value =
+        cells[8].innerText.trim() === "-" ? "" : cells[8].innerText.trim();
+
+    document.getElementById("editPortCount").value =
+        cells[9].innerText.trim() === "-" ? "" : cells[9].innerText.trim();
+
+    document.getElementById("editRack").value =
+        cells[10].innerText.trim() === "-" ? "" : cells[10].innerText.trim();
+
+    document.getElementById("editStatus").value =
+        cells[11].innerText.trim() || "Active";
+
+    document.getElementById("editRemarks").value = "";
+
+    document.getElementById("switchEditOverlay").classList.add("show");
+
+    document.getElementById("editSwitchName").focus();
+}
+
+function closeSwitchEdit() {
+
+    document
+        .getElementById("switchEditOverlay")
+        .classList.remove("show");
+
+    currentSwitchId = null;
+}
+
+document
+    .getElementById("switchEditOverlay")
+    .addEventListener("click", function(e) {
+
+        if (e.target === this) {
+            closeSwitchEdit();
+        }
+
+    });
+
+document
+    .getElementById("switchEditForm")
+    .addEventListener("submit", async function(e) {
+
+        e.preventDefault();
+
+        if (!currentSwitchId) {
+            alert("Invalid Switch ID.");
+            return;
+        }
+
+        const saveButton =
+            this.querySelector(".switch-btn-save");
+
+        saveButton.disabled = true;
+        saveButton.innerText = "Saving...";
+
+        try {
+
+            const response = await fetch(
+                "/api/switches/" + currentSwitchId,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+
+                        switchName:
+                            document.getElementById("editSwitchName").value,
+
+                        location:
+                            document.getElementById("editLocation").value,
+
+                        ipAddress:
+                            document.getElementById("editIpAddress").value,
+
+                        switchType:
+                            document.getElementById("editSwitchType").value,
+
+                        switchMode:
+                            document.getElementById("editSwitchMode").value,
+
+                        vendor:
+                            document.getElementById("editVendor").value,
+
+                        model:
+                            document.getElementById("editModel").value,
+
+                        serialNo:
+                            document.getElementById("editSerialNo").value,
+
+                        portCount:
+                            document.getElementById("editPortCount").value,
+
+                        rack:
+                            document.getElementById("editRack").value,
+
+                        status:
+                            document.getElementById("editStatus").value,
+
+                        remarks:
+                            document.getElementById("editRemarks").value
+
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!result.success) {
+                alert(result.message || "Update failed.");
+                return;
+            }
+
+            closeSwitchEdit();
+
+            location.reload();
+
+        } catch (error) {
+
+            alert("Update Error: " + error.message);
+
+        } finally {
+
+            saveButton.disabled = false;
+            saveButton.innerText = "Save Changes";
+
+        }
+
+    });
+
+</script>
+</body>
+</html>
+
+
+

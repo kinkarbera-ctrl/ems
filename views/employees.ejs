@@ -1,0 +1,372 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EMS - Employee Master</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/inner-pages.css">
+</head>
+
+<body>
+<!-- MP BIRLA BRAND HEADER -->
+<div class="birla-brand-header">
+    <div class="birla-logo">
+        <div class="birla-mark">MP</div>
+        <div class="birla-text">
+            <strong>MP BIRLA GROUP</strong>
+            <span>BIRLA CORPORATION LIMITED</span>
+        </div>
+    </div>
+
+    <div class="employee-page-heading">
+        <h1>EMPLOYEE MASTER</h1>
+        <p>Employee Information & Management</p>
+    </div>
+</div>
+
+<style>
+.birla-brand-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 25px;
+    padding: 16px 22px;
+    margin-bottom: 18px;
+
+    background: rgba(255,255,255,.92);
+    border: 1px solid #e3e8ef;
+    border-radius: 16px;
+
+    box-shadow: 0 8px 25px rgba(20,40,70,.10);
+}
+
+.birla-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.birla-mark {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #17365d;
+    color: #fff;
+
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: 1px;
+
+    border: 3px solid #c9a227;
+
+    box-shadow: 0 4px 12px rgba(0,0,0,.18);
+}
+
+.birla-text {
+    display: flex;
+    flex-direction: column;
+}
+
+.birla-text strong {
+    color: #17365d;
+    font-size: 17px;
+    letter-spacing: 1.5px;
+}
+
+.birla-text span {
+    color: #7a8491;
+    font-size: 10px;
+    margin-top: 3px;
+    letter-spacing: .7px;
+}
+
+.employee-page-heading {
+    text-align: right;
+}
+
+.employee-page-heading h1 {
+    margin: 0;
+    color: #17365d;
+    font-size: 25px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.employee-page-heading p {
+    margin: 4px 0 0;
+    color: #7a8491;
+    font-size: 12px;
+}
+
+@media(max-width:700px) {
+    .birla-brand-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .employee-page-heading {
+        text-align: left;
+    }
+}
+</style>
+
+
+<div class="ems-layout">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">EMS</div>
+            <div>
+                <div class="brand-title">Employee</div>
+                <div class="brand-subtitle">Management System</div>
+            </div>
+        </div>
+
+        <div class="menu-title">MAIN MENU</div>
+
+        <a href="/dashboard" class="menu-item">
+            <span class="menu-icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="/employees" class="menu-item active">
+            <span class="menu-icon">♙</span>
+            <span>Employee Master</span>
+        </a>
+
+        <a href="/phones" class="menu-item">
+            <span class="menu-icon">☎</span>
+            <span>Phone Master</span>
+        </a>
+
+        <a href="/switches" class="menu-item">
+            <span class="menu-icon">▣</span>
+            <span>Switch Master</span>
+        </a>
+
+        <a href="/master-data" class="menu-item">
+            <span class="menu-icon">▤</span>
+            <span>Master Data</span>
+        </a>
+
+        <div class="sidebar-bottom">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+            <div class="version">EMS v1.0</div>
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <div class="page-title">Employee Master</div>
+                <div class="page-subtitle">
+                    Employee information and records
+                </div>
+            </div>
+
+            <div class="user-box">
+                <div class="user-avatar">A</div>
+                <div>
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role">System Admin</div>
+                </div>
+            </div>
+
+        </header>
+
+
+        <section class="inner-content">
+
+            <div class="inner-heading">
+                <div>
+                    <h1>Employee Master</h1>
+                    <p>Manage employee master records</p>
+                </div>
+
+                
+            </div>
+
+
+            <div class="page-toolbar">
+
+                <div class="toolbar-left">
+
+                    <input
+                        id="employeeSearch"
+                        class="page-search"
+                        type="text"
+                        placeholder="Search employee, code, department..."
+                    >
+
+                </div>
+
+                <div class="toolbar-right">
+
+                    <button class="btn btn-light">
+                        ↓ Export Excel
+                    </button>
+
+                    <button class="btn btn-light">
+                        ↑ Import Excel
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="data-panel">
+
+                <div class="data-panel-header">
+
+                    <div>
+                        <div class="data-panel-title">
+                            Employee Records
+                        </div>
+
+                        <div class="data-panel-subtitle">
+                            Employee master information
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="data-table-wrap">
+
+                    <table class="data-table" id="employeeTable">
+
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>EMP CODE</th>
+                                <th>SAP CODE</th>
+                                <th>EMPLOYEE NAME</th>
+                                <th>DOMAIN ID</th>
+                                <th>EMAIL</th>
+                                <th>MOBILE</th>
+                                <th>PHONE</th>
+                                <th>DEPARTMENT</th>
+                                <th>DESIGNATION</th>
+                                <th>ACTION</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                        <% if (employees && employees.length > 0) { %>
+
+                            <% employees.forEach(function(emp) { %>
+
+                            <tr>
+
+                                <td><%= emp.ID || "-" %></td>
+
+                                <td>
+                                    <span class="code-badge">
+                                        <%= emp.EMP_CODE || "-" %>
+                                    </span>
+                                </td>
+
+                                <td><%= emp.SAP_CODE || "-" %></td>
+
+                                <td>
+                                    <strong>
+                                        <%= emp.EMP_NAME || "-" %>
+                                    </strong>
+                                </td>
+
+                                <td><%= emp.DOMAIN_ID || "-" %></td>
+
+                                <td><%= emp.EMAIL || "-" %></td>
+
+                                <td><%= emp.MOBILE_NO || "-" %></td>
+
+                                <td><%= emp.PHONE_NO || "-" %></td>
+
+                                <td><%= emp.DEPARTMENT || "-" %></td>
+
+                                <td><%= emp.DESIGNATION || "-" %></td>
+
+                                <td>
+                                    <div class="action-group">
+                                        <button class="action-btn action-edit">✎</button>
+                                        <button class="action-btn action-delete">×</button>
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <% }); %>
+
+                        <% } else { %>
+
+                            <tr>
+                                <td colspan="11">
+                                    <div class="empty-state">
+                                        No employee records found
+                                    </div>
+                                </td>
+                            </tr>
+
+                        <% } %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+const employeeSearch =
+    document.getElementById("employeeSearch");
+
+employeeSearch.addEventListener("input", function () {
+
+    const value = this.value.toLowerCase().trim();
+
+    document
+        .querySelectorAll("#employeeTable tbody tr")
+        .forEach(function (row) {
+
+            row.style.display =
+                row.innerText.toLowerCase().includes(value)
+                    ? ""
+                    : "none";
+
+        });
+
+});
+
+</script>
+
+</body>
+</html>
+
+
+

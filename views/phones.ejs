@@ -1,0 +1,697 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EMS - Phone Master</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="/inner-pages.css">
+</head>
+
+<body>
+
+<div class="ems-layout">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-logo">EMS</div>
+            <div>
+                <div class="brand-title">Employee</div>
+                <div class="brand-subtitle">Management System</div>
+            </div>
+        </div>
+
+        <div class="menu-title">MAIN MENU</div>
+
+        <a href="/dashboard" class="menu-item">
+            <span class="menu-icon">⌂</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="/employees" class="menu-item">
+            <span class="menu-icon">♙</span>
+            <span>Employee Master</span>
+        </a>
+
+        <a href="/phones" class="menu-item active">
+            <span class="menu-icon">☎</span>
+            <span>Phone Master</span>
+        </a>
+
+        <a href="/switches" class="menu-item">
+            <span class="menu-icon">▣</span>
+            <span>Switch Master</span>
+        </a>
+
+        <a href="/master-data" class="menu-item">
+            <span class="menu-icon">▤</span>
+            <span>Master Data</span>
+        </a>
+
+        <div class="sidebar-bottom">
+            <div class="system-status">
+                <span class="status-dot"></span>
+                System Online
+            </div>
+            <div class="version">EMS v1.0</div>
+        </div>
+
+    </aside>
+
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div>
+                <div class="page-title">Phone Master</div>
+                <div class="page-subtitle">
+                    Employee phone and contact information
+                </div>
+            </div>
+
+            <div class="user-box">
+                <div class="user-avatar">A</div>
+                <div>
+                    <div class="user-name">Administrator</div>
+                    <div class="user-role">System Admin</div>
+                </div>
+            </div>
+
+        </header>
+
+
+        <section class="inner-content">
+
+            <div class="inner-heading">
+
+                <div>
+                    <h1>Phone Master</h1>
+                    <p>Manage employee telephone records</p>
+                </div>
+
+                <button class="btn btn-primary">
+                    + Add Phone
+                </button>
+
+            </div>
+
+
+            <div class="page-toolbar">
+
+                <div class="toolbar-left">
+
+                    <input
+                        id="phoneSearch"
+                        class="page-search"
+                        type="text"
+                        placeholder="Search employee, mobile, phone..."
+                    >
+
+                </div>
+
+                <div class="toolbar-right">
+
+                    <button class="btn btn-light">
+                        ↓ Export Excel
+                    </button>
+
+                    <button class="btn btn-light">
+                        ↑ Import Excel
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="data-panel">
+
+                <div class="data-panel-header">
+
+                    <div>
+                        <div class="data-panel-title">
+                            Phone Records
+                        </div>
+
+                        <div class="data-panel-subtitle">
+                            Employee contact details
+                        </div>
+                    </div>
+
+                </div>
+
+
+                <div class="data-table-wrap">
+
+                    <table class="data-table" id="phoneTable">
+
+                        <thead>
+
+                            <tr>
+                                <th>ID</th>
+                                <th>EMPLOYEE CODE</th>
+                                <th>EMPLOYEE NAME</th>
+                                <th>MOBILE</th>
+                                <th>PHONE</th>
+                                <th>EXTENSION</th>
+                                <th>CREATED</th>
+                                <th>ACTION</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                        <% if (phones && phones.length > 0) { %>
+
+                            <% phones.forEach(function(phone) { %>
+
+                            <tr>
+
+                                <td><%= phone.Id || "-" %></td>
+
+                                <td>
+                                    <span class="code-badge">
+                                        <%= phone.EmployeeCode || "-" %>
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        <%= phone.EmployeeName || "-" %>
+                                    </strong>
+                                </td>
+
+                                <td><%= phone.Mobile || "-" %></td>
+
+                                <td><%= phone.Phone || "-" %></td>
+
+                                <td><%= phone.Extension || "-" %></td>
+
+                                <td>
+                                    <%= phone.CreatedAt || "-" %>
+                                </td>
+
+                                <td>
+
+                                    <div class="action-group">
+
+                                        <button class="action-btn action-edit" type="button" onclick="openPhoneEdit(this)">
+                                            ✎
+                                        </button>
+
+                                        <button class="action-btn action-delete" type="button" onclick="deletePhone(this)">
+                                            ×
+                                        </button>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            <% }); %>
+
+                        <% } else { %>
+
+                            <tr>
+
+                                <td colspan="8">
+
+                                    <div class="empty-state">
+                                        No phone records found
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                        <% } %>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+const phoneSearch =
+    document.getElementById("phoneSearch");
+
+phoneSearch.addEventListener("input", function () {
+
+    const value = this.value.toLowerCase().trim();
+
+    document
+        .querySelectorAll("#phoneTable tbody tr")
+        .forEach(function (row) {
+
+            row.style.display =
+                row.innerText.toLowerCase().includes(value)
+                    ? ""
+                    : "none";
+
+        });
+
+});
+
+</script>
+
+<style>
+
+.phone-edit-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(15, 23, 42, .48);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.phone-edit-overlay.show {
+    display: flex;
+}
+
+.phone-edit-modal {
+    width: min(700px, 96vw);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 25px 70px rgba(15, 23, 42, .25);
+    animation: phoneModalIn .18s ease-out;
+}
+
+@keyframes phoneModalIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.phone-edit-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 26px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.phone-edit-title {
+    margin: 0;
+    font-size: 21px;
+    font-weight: 700;
+    color: #172033;
+}
+
+.phone-edit-subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #7b8494;
+}
+
+.phone-edit-close {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #475569;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.phone-edit-close:hover {
+    background: #e5e7eb;
+}
+
+.phone-edit-body {
+    padding: 24px 26px;
+}
+
+.phone-edit-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+.phone-edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.phone-edit-field label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #475569;
+}
+
+.phone-edit-field input {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #d7dce5;
+    border-radius: 9px;
+    padding: 11px 12px;
+    font-size: 14px;
+    color: #172033;
+    background: #fff;
+    outline: none;
+}
+
+.phone-edit-field input:focus {
+    border-color: #64748b;
+    box-shadow: 0 0 0 3px rgba(100,116,139,.10);
+}
+
+.phone-edit-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 18px 26px;
+    border-top: 1px solid #e5e7eb;
+    background: #fafbfc;
+    border-radius: 0 0 18px 18px;
+}
+
+.phone-btn-cancel,
+.phone-btn-save {
+    border: 0;
+    border-radius: 9px;
+    padding: 11px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.phone-btn-cancel {
+    background: #eef0f3;
+    color: #475569;
+}
+
+.phone-btn-save {
+    background: #172033;
+    color: #fff;
+}
+
+.phone-btn-save:hover {
+    background: #0f172a;
+}
+
+@media (max-width: 650px) {
+    .phone-edit-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+
+<div id="phoneEditOverlay" class="phone-edit-overlay">
+
+    <div class="phone-edit-modal">
+
+        <div class="phone-edit-header">
+
+            <div>
+                <h2 class="phone-edit-title">Edit Phone</h2>
+
+                <div class="phone-edit-subtitle">
+                    Update employee phone details
+                </div>
+            </div>
+
+            <button
+                type="button"
+                class="phone-edit-close"
+                onclick="closePhoneEdit()">
+                ×
+            </button>
+
+        </div>
+
+        <form id="phoneEditForm">
+
+            <div class="phone-edit-body">
+
+                <div class="phone-edit-grid">
+
+                    <div class="phone-edit-field">
+                        <label>Employee Code</label>
+                        <input id="editPhoneEmployeeCode" type="text">
+                    </div>
+
+                    <div class="phone-edit-field">
+                        <label>Employee Name</label>
+                        <input id="editPhoneEmployeeName" type="text">
+                    </div>
+
+                    <div class="phone-edit-field">
+                        <label>Mobile</label>
+                        <input id="editPhoneMobile" type="text">
+                    </div>
+
+                    <div class="phone-edit-field">
+                        <label>Phone</label>
+                        <input id="editPhonePhone" type="text">
+                    </div>
+
+                    <div class="phone-edit-field">
+                        <label>Extension</label>
+                        <input id="editPhoneExtension" type="text">
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="phone-edit-footer">
+
+                <button
+                    type="button"
+                    class="phone-btn-cancel"
+                    onclick="closePhoneEdit()">
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="phone-btn-save">
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+let currentPhoneId = null;
+
+function openPhoneEdit(button) {
+
+    const row = button.closest("tr");
+
+    if (!row) {
+        alert("Phone record not found.");
+        return;
+    }
+
+    const cells = row.querySelectorAll("td");
+
+    currentPhoneId = cells[0].innerText.trim();
+
+    document.getElementById("editPhoneEmployeeCode").value =
+        cells[1]?.innerText.trim() || "";
+
+    document.getElementById("editPhoneEmployeeName").value =
+        cells[2]?.innerText.trim() || "";
+
+    document.getElementById("editPhoneMobile").value =
+        cells[3]?.innerText.trim() || "";
+
+    document.getElementById("editPhonePhone").value =
+        cells[4]?.innerText.trim() || "";
+
+    document.getElementById("editPhoneExtension").value =
+        cells[5]?.innerText.trim() || "";
+
+    document
+        .getElementById("phoneEditOverlay")
+        .classList.add("show");
+
+    document
+        .getElementById("editPhoneEmployeeCode")
+        .focus();
+}
+
+function closePhoneEdit() {
+
+    document
+        .getElementById("phoneEditOverlay")
+        .classList.remove("show");
+
+    currentPhoneId = null;
+}
+
+document
+    .getElementById("phoneEditOverlay")
+    .addEventListener("click", function(e) {
+
+        if (e.target === this) {
+            closePhoneEdit();
+        }
+
+    });
+
+document
+    .getElementById("phoneEditForm")
+    .addEventListener("submit", async function(e) {
+
+        e.preventDefault();
+
+        if (!currentPhoneId) {
+            alert("Invalid Phone ID.");
+            return;
+        }
+
+        const saveButton =
+            this.querySelector(".phone-btn-save");
+
+        saveButton.disabled = true;
+        saveButton.innerText = "Saving...";
+
+        try {
+
+            const response = await fetch(
+                "/api/phones/" + currentPhoneId,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+
+                        EmployeeCode:
+                            document.getElementById(
+                                "editPhoneEmployeeCode"
+                            ).value,
+
+                        EmployeeName:
+                            document.getElementById(
+                                "editPhoneEmployeeName"
+                            ).value,
+
+                        Mobile:
+                            document.getElementById(
+                                "editPhoneMobile"
+                            ).value,
+
+                        Phone:
+                            document.getElementById(
+                                "editPhonePhone"
+                            ).value,
+
+                        Extension:
+                            document.getElementById(
+                                "editPhoneExtension"
+                            ).value
+                    })
+                }
+            );
+
+            const result = await response.json();
+
+            if (!result.success) {
+                alert(result.message || "Update failed.");
+                return;
+            }
+
+            closePhoneEdit();
+            location.reload();
+
+        } catch (error) {
+
+            alert("Update Error: " + error.message);
+
+        } finally {
+
+            saveButton.disabled = false;
+            saveButton.innerText = "Save Changes";
+
+        }
+
+    });
+
+
+async function deletePhone(button) {
+
+    const row = button.closest("tr");
+
+    if (!row) {
+        alert("Phone record not found.");
+        return;
+    }
+
+    const cells = row.querySelectorAll("td");
+
+    const id = cells[0].innerText.trim();
+    const employeeName = cells[2]?.innerText.trim() || "this record";
+
+    if (!confirm(
+        'Delete phone record for "' +
+        employeeName +
+        '"?\n\nThis action cannot be undone.'
+    )) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/api/master-data/phone/" + id,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const result = await response.json();
+
+        if (!result.success) {
+            alert(result.message || "Delete failed.");
+            return;
+        }
+
+        location.reload();
+
+    } catch (error) {
+
+        alert("Delete Error: " + error.message);
+
+    }
+}
+
+</script>
+</body>
+</html>
+

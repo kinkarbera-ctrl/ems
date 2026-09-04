@@ -1,0 +1,397 @@
+﻿<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* FULL WALLPAPER */
+.dashboard-wallpaper {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+
+    background-image:
+        linear-gradient(
+            rgba(0, 0, 0, 0.28),
+            rgba(0, 0, 0, 0.48)
+        ),
+        url("/images/satna-wallpaper.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* TOP BRAND */
+.dashboard-brand {
+    position: absolute;
+    top: 35px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: white;
+    text-shadow: 0 3px 12px rgba(0,0,0,.65);
+}
+
+.dashboard-brand .company {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+}
+
+.dashboard-brand h1 {
+    margin: 8px 0 0;
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.dashboard-brand p {
+    margin: 7px 0 0;
+    font-size: 14px;
+    opacity: .9;
+}
+
+/* CENTER PANEL */
+.menu-panel {
+    width: min(920px, 92%);
+    padding: 35px 40px 40px;
+
+    background: rgba(255,255,255,.13);
+    border: 1px solid rgba(255,255,255,.32);
+    border-radius: 28px;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,.38),
+        inset 0 1px 0 rgba(255,255,255,.25);
+
+    text-align: center;
+}
+
+.menu-title {
+    color: white;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 25px;
+    opacity: .9;
+}
+
+/* MENU GRID */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+/* MENU CARD */
+.menu-card {
+    text-decoration: none;
+    color: white;
+
+    min-height: 135px;
+    padding: 24px 15px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255,255,255,.16);
+    border: 1px solid rgba(255,255,255,.38);
+    border-radius: 20px;
+
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+
+    box-shadow: 0 10px 25px rgba(0,0,0,.18);
+
+    transition: all .25s ease;
+}
+
+.menu-card:hover {
+    transform: translateY(-7px) scale(1.02);
+    background: rgba(255,255,255,.28);
+    border-color: rgba(255,255,255,.7);
+    box-shadow: 0 18px 35px rgba(0,0,0,.35);
+}
+
+.menu-icon {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 16px;
+
+    background: rgba(255,255,255,.22);
+    border: 1px solid rgba(255,255,255,.35);
+
+    font-size: 25px;
+    margin-bottom: 13px;
+}
+
+.menu-card h3 {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.menu-card span {
+    margin-top: 5px;
+    font-size: 11px;
+    opacity: .78;
+}
+
+/* CENTER BOTTOM CARD */
+.menu-card.center-card {
+    grid-column: 2;
+}
+
+/* FOOTER */
+.dashboard-footer {
+    position: absolute;
+    bottom: 18px;
+    left: 0;
+    right: 0;
+
+    text-align: center;
+    color: white;
+    font-size: 11px;
+    opacity: .8;
+}
+
+/* MOBILE */
+@media (max-width: 700px) {
+
+    body {
+        overflow: auto;
+    }
+
+    .dashboard-wallpaper {
+        min-height: 100vh;
+        padding: 110px 15px 70px;
+    }
+
+    .dashboard-brand {
+        top: 25px;
+    }
+
+    .dashboard-brand h1 {
+        font-size: 24px;
+    }
+
+    .dashboard-brand .company {
+        font-size: 12px;
+        letter-spacing: 2px;
+    }
+
+    .menu-panel {
+        padding: 25px 18px;
+    }
+
+    .menu-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .menu-card.center-card {
+        grid-column: span 2;
+    }
+}
+
+/* ===== EMS MENU WALLPAPER CARDS ===== */
+
+.menu-grid {
+    position: relative;
+    z-index: 5;
+}
+
+.menu-card {
+    position: relative;
+    overflow: hidden;
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,.30),
+            rgba(255,255,255,.12)
+        ),
+        url("/images/satna-wallpaper.jpg");
+
+    background-size: cover;
+    background-position: center;
+
+    border: 1px solid rgba(255,255,255,.65);
+    border-radius: 22px;
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,.25),
+        inset 0 1px 0 rgba(255,255,255,.55);
+
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+
+    transition: all .25s ease;
+}
+
+.menu-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background: rgba(20,35,50,.18);
+
+    z-index: 0;
+}
+
+.menu-card > * {
+    position: relative;
+    z-index: 2;
+}
+
+.menu-card:hover {
+    transform: translateY(-7px) scale(1.025);
+
+    box-shadow:
+        0 20px 40px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+.menu-card:hover::before {
+    background: rgba(20,35,50,.05);
+}
+
+.menu-icon {
+    background: rgba(255,255,255,.30) !important;
+    border: 1px solid rgba(255,255,255,.60) !important;
+    box-shadow: 0 5px 15px rgba(0,0,0,.18);
+}
+
+.menu-card h3,
+.menu-card span {
+    text-shadow: 0 2px 6px rgba(0,0,0,.55);
+}
+</style>
+
+
+<div class="dashboard-wallpaper">
+
+    <!-- HEADER -->
+    <div class="dashboard-brand">
+
+        <div class="company">
+            BIRLA CORPORATION • SATNA
+        </div>
+
+        <h1>
+            EMPLOYEE MANAGEMENT SYSTEM
+        </h1>
+
+        <p>
+            Employee • Communication • Network • Master Management
+        </p>
+
+    </div>
+
+
+    <!-- CENTER MENU -->
+    <div class="menu-panel">
+
+        <div class="menu-title">
+            Main Modules
+        </div>
+
+        <div class="menu-grid">
+
+            <!-- Dashboard -->
+            <a href="/dashboard" class="menu-card">
+
+                <div class="menu-icon">
+                    🏠
+                </div>
+
+                <h3>Dashboard</h3>
+                <span>System Overview</span>
+
+            </a>
+
+
+            <!-- Employee -->
+            <a href="/employees" class="menu-card">
+
+                <div class="menu-icon">
+                    👤
+                </div>
+
+                <h3>Employee Master</h3>
+                <span>Employee Management</span>
+
+            </a>
+
+
+            <!-- Phone -->
+            <a href="/phones" class="menu-card">
+
+                <div class="menu-icon">
+                    ☎
+                </div>
+
+                <h3>Phone Master</h3>
+                <span>Phone & Extension</span>
+
+            </a>
+
+
+            <!-- Switch -->
+            <a href="/switches" class="menu-card">
+
+                <div class="menu-icon">
+                    🖧
+                </div>
+
+                <h3>Switch Master</h3>
+                <span>Network Management</span>
+
+            </a>
+
+
+            <!-- Master Data -->
+            <a href="/master-data" class="menu-card">
+
+                <div class="menu-icon">
+                    ▤
+                </div>
+
+                <h3>Master Data</h3>
+                <span>System Masters</span>
+
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+    <div class="dashboard-footer">
+        Employee Management System &nbsp; | &nbsp; Birla Corporation Limited • Satna
+    </div>
+
+</div>
+
+
+
