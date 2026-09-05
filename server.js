@@ -61,7 +61,6 @@ app.get("/api/health", async (req, res) => {
         });
 
     } catch (error) {
-
         console.error("Health Error:", error);
 
         res.status(500).json({
@@ -86,12 +85,7 @@ app.get("/", (req, res) => {
 // =====================================================
 
 app.get("/dashboard", async (req, res) => {
-
     try {
-
-        // ---------------------------------------------
-        // EMPLOYEES
-        // ---------------------------------------------
 
         const employees = await pool.query(`
             SELECT
@@ -105,75 +99,44 @@ app.get("/dashboard", async (req, res) => {
             LIMIT 10
         `);
 
-        // ---------------------------------------------
-        // EMPLOYEE COUNT
-        // ---------------------------------------------
-
         const employeeCount = await pool.query(`
             SELECT COUNT(*) AS total
             FROM "Employees"
         `);
-
-        // ---------------------------------------------
-        // PHONE COUNT
-        // ---------------------------------------------
 
         const phoneCount = await pool.query(`
             SELECT COUNT(*) AS total
             FROM "Phones"
         `);
 
-        // ---------------------------------------------
-        // SWITCH COUNT
-        // ---------------------------------------------
-
         const switchCount = await pool.query(`
             SELECT COUNT(*) AS total
             FROM "Switches"
         `);
 
-        // ---------------------------------------------
-        // SWITCHES
-        // ---------------------------------------------
-
         const switches = await pool.query(`
             SELECT
-                "id",
+                id,
                 "switchName",
-                "location",
+                location,
                 "ipAddress",
-                "vendor",
-                "model",
-                "status"
+                vendor,
+                model,
+                status
             FROM "Switches"
-            ORDER BY "id" DESC
+            ORDER BY id DESC
             LIMIT 10
         `);
 
-        // ---------------------------------------------
-        // RENDER
-        // ---------------------------------------------
-
         res.render("dashboard", {
-
-            totalEmployees:
-                Number(employeeCount.rows[0].total),
-
-            totalPhones:
-                Number(phoneCount.rows[0].total),
-
-            totalSwitches:
-                Number(switchCount.rows[0].total),
-
-            employees:
-                employees.rows,
-
-            switches:
-                switches.rows
+            totalEmployees: Number(employeeCount.rows[0].total),
+            totalPhones: Number(phoneCount.rows[0].total),
+            totalSwitches: Number(switchCount.rows[0].total),
+            employees: employees.rows,
+            switches: switches.rows
         });
 
     } catch (error) {
-
         console.error("Dashboard Error:", error);
 
         res.status(500).send(
@@ -187,7 +150,6 @@ app.get("/dashboard", async (req, res) => {
 // =====================================================
 
 app.get("/employees", async (req, res) => {
-
     try {
 
         const result = await pool.query(`
@@ -212,7 +174,6 @@ app.get("/employees", async (req, res) => {
         });
 
     } catch (error) {
-
         console.error("Employees Error:", error);
 
         res.status(500).send(
@@ -226,12 +187,11 @@ app.get("/employees", async (req, res) => {
 // =====================================================
 
 app.get("/phones", async (req, res) => {
-
     try {
 
         const result = await pool.query(`
             SELECT
-                "id",
+                id,
                 "EmployeeCode",
                 "EmployeeName",
                 "Mobile",
@@ -240,7 +200,7 @@ app.get("/phones", async (req, res) => {
                 "CreatedAt",
                 "UpdatedAt"
             FROM "Phones"
-            ORDER BY "id" DESC
+            ORDER BY id DESC
         `);
 
         res.render("phones", {
@@ -248,7 +208,6 @@ app.get("/phones", async (req, res) => {
         });
 
     } catch (error) {
-
         console.error("Phone Error:", error);
 
         res.status(500).send(
@@ -262,27 +221,26 @@ app.get("/phones", async (req, res) => {
 // =====================================================
 
 app.get("/switches", async (req, res) => {
-
     try {
 
         const result = await pool.query(`
             SELECT
-                "id",
+                id,
                 "switchName",
-                "location",
+                location,
                 "ipAddress",
                 "switchType",
                 "switchMode",
-                "vendor",
-                "model",
+                vendor,
+                model,
                 "serialNo",
                 "portCount",
-                "rack",
-                "status",
-                "remarks",
+                rack,
+                status,
+                remarks,
                 "createdAt"
             FROM "Switches"
-            ORDER BY "id" DESC
+            ORDER BY id DESC
         `);
 
         res.render("switches", {
@@ -290,7 +248,6 @@ app.get("/switches", async (req, res) => {
         });
 
     } catch (error) {
-
         console.error("Switch Error:", error);
 
         res.status(500).send(
@@ -300,41 +257,179 @@ app.get("/switches", async (req, res) => {
 });
 
 // =====================================================
-// DATABASE TEST
+// MASTER DATA PAGE
 // =====================================================
 
-app.get("/api/db-test", async (req, res) => {
+app.get("/master-data", async (req, res) => {
+    try {
+
+        const masterData = await pool.query(`
+            SELECT
+                "MasterId",
+                "MasterType",
+                "MasterCode",
+                "MasterName",
+                "Description",
+                "IsActive",
+                "CreatedAt",
+                "UpdatedAt"
+            FROM "MasterData"
+            ORDER BY "MasterId" DESC
+        `);
+
+        res.render("master-data", {
+            masterData: masterData.rows
+        });
+
+    } catch (error) {
+        console.error("Master Data Page Error:", error);
+
+        res.status(500).send(
+            "Master Data Database Error: " + error.message
+        );
+    }
+});
+
+// =====================================================
+// MASTER DATA API
+// =====================================================
+
+app.get("/api/master-data/:type", async (req, res) => {
 
     try {
 
-        const result = await pool.query(`
-            SELECT
-                current_database() AS database,
-                current_user AS user
-        `);
+        const type = String(req.params.type).toLowerCase();
 
-        const tables = await pool.query(`
-            SELECT
-                table_schema,
-                table_name
-            FROM information_schema.tables
-            WHERE table_schema = 'public'
-            ORDER BY table_name
-        `);
+        let result;
+
+        if (type === "department") {
+
+            result = await pool.query(`
+                SELECT
+                    "MasterId",
+                    "MasterType",
+                    "MasterCode",
+                    "MasterName",
+                    "Description",
+                    "IsActive",
+                    "CreatedAt",
+                    "UpdatedAt"
+                FROM "MasterData"
+                WHERE LOWER("MasterType") = 'department'
+                ORDER BY "MasterId" DESC
+            `);
+
+        } else if (type === "designation") {
+
+            result = await pool.query(`
+                SELECT
+                    "MasterId",
+                    "MasterType",
+                    "MasterCode",
+                    "MasterName",
+                    "Description",
+                    "IsActive",
+                    "CreatedAt",
+                    "UpdatedAt"
+                FROM "MasterData"
+                WHERE LOWER("MasterType") = 'designation'
+                ORDER BY "MasterId" DESC
+            `);
+
+        } else if (type === "location") {
+
+            result = await pool.query(`
+                SELECT
+                    "MasterId",
+                    "MasterType",
+                    "MasterCode",
+                    "MasterName",
+                    "Description",
+                    "IsActive",
+                    "CreatedAt",
+                    "UpdatedAt"
+                FROM "MasterData"
+                WHERE LOWER("MasterType") = 'location'
+                ORDER BY "MasterId" DESC
+            `);
+
+        } else if (type === "employee") {
+
+            result = await pool.query(`
+                SELECT
+                    "ID",
+                    "EMP_CODE",
+                    "EMP_NAME",
+                    "DOMAIN_ID",
+                    "EMAIL",
+                    "MOBILE_NO",
+                    "PHONE_NO",
+                    "DEPARTMENT",
+                    "DESIGNATION",
+                    "SAP_CODE",
+                    "CREATED_AT"
+                FROM "Employees"
+                ORDER BY "ID" DESC
+            `);
+
+        } else if (type === "phone") {
+
+            result = await pool.query(`
+                SELECT
+                    id,
+                    "EmployeeCode",
+                    "EmployeeName",
+                    "Mobile",
+                    "Phone",
+                    "Extension",
+                    "CreatedAt",
+                    "UpdatedAt"
+                FROM "Phones"
+                ORDER BY id DESC
+            `);
+
+        } else if (type === "switch") {
+
+            result = await pool.query(`
+                SELECT
+                    id,
+                    "switchName",
+                    location,
+                    "ipAddress",
+                    "switchType",
+                    "switchMode",
+                    vendor,
+                    model,
+                    "serialNo",
+                    "portCount",
+                    rack,
+                    status,
+                    remarks,
+                    "createdAt"
+                FROM "Switches"
+                ORDER BY id DESC
+            `);
+
+        } else {
+
+            return res.status(400).json({
+                success: false,
+                message: "Invalid master type"
+            });
+        }
 
         res.json({
             success: true,
-            database: result.rows[0],
-            tables: tables.rows
+            data: result.rows
         });
 
     } catch (error) {
 
-        console.error("DB Test Error:", error);
+        console.error("Master Data API Error:", error);
 
         res.status(500).json({
             success: false,
-            error: error.message
+            message: error.message
         });
     }
 });
@@ -344,23 +439,39 @@ app.get("/api/db-test", async (req, res) => {
 // =====================================================
 
 app.use((req, res) => {
-
     res.status(404).send(
-        "Page not found: " + req.originalUrl
+        "Page not found: " + req.path
     );
 });
 
 // =====================================================
-// START SERVER
+// SERVER START
 // =====================================================
 
-app.listen(PORT, "0.0.0.0", () => {
+app.listen(PORT, () => {
+    console.log("======================================");
+    console.log("EMS SERVER STARTED");
+    console.log("Port:", PORT);
+    console.log("Database: PostgreSQL");
+    console.log("======================================");
+});
 
-    console.log("");
-    console.log("==========================================");
-    console.log("       EMS POSTGRESQL SERVER STARTED");
-    console.log("==========================================");
-    console.log("PORT:", PORT);
-    console.log("DATABASE: PostgreSQL");
-    console.log("==========================================");
+// =====================================================
+// GRACEFUL SHUTDOWN
+// =====================================================
+
+process.on("SIGINT", async () => {
+    console.log("Shutting down...");
+
+    await pool.end();
+
+    process.exit(0);
+});
+
+process.on("SIGTERM", async () => {
+    console.log("Shutting down...");
+
+    await pool.end();
+
+    process.exit(0);
 });
